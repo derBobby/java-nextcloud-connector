@@ -1,4 +1,4 @@
-package eu.planlos.nextcloudjavaconnector.model;
+package eu.planlos.javanextcloudconnector.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;

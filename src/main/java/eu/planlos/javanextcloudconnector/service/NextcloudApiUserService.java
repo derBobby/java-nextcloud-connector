@@ -1,9 +1,9 @@
-package eu.planlos.nextcloudjavaconnector.service;
+package eu.planlos.javanextcloudconnector.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import eu.planlos.nextcloudjavaconnector.common.util.GermanStringsUtility;
-import eu.planlos.nextcloudjavaconnector.config.NextcloudApiConfig;
-import eu.planlos.nextcloudjavaconnector.model.*;
+import eu.planlos.javanextcloudconnector.config.NextcloudApiConfig;
+import eu.planlos.javanextcloudconnector.model.*;
+import eu.planlos.javautilities.GermanStringsUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
@@ -167,8 +167,8 @@ public class NextcloudApiUserService extends NextcloudApiService {
      * Username generators
      */
     private String generateUserId(Map<String, String> allUsersMap, String firstNameParam, String lastNameParam) {
-        String firstName = GermanStringsUtility.handleGermanChars(firstNameParam);
-        String lastName = GermanStringsUtility.handleGermanChars(lastNameParam);
+        String firstName = GermanStringsUtility.normalizeGermanCharacters(firstNameParam);
+        String lastName = GermanStringsUtility.normalizeGermanCharacters(lastNameParam);
         return generateUserId(allUsersMap, firstName, lastName, 1);
     }
 

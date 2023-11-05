@@ -1,9 +1,9 @@
-package eu.planlos.nextcloudjavaconnector.config;
+package eu.planlos.javanextcloudconnector.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import eu.planlos.nextcloudjavaconnector.model.NextcloudApiResponseDeserializer;
-import eu.planlos.nextcloudjavaconnector.model.NextcloudApiResponse;
+import eu.planlos.javanextcloudconnector.model.NextcloudApiResponseDeserializer;
+import eu.planlos.javanextcloudconnector.model.NextcloudApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

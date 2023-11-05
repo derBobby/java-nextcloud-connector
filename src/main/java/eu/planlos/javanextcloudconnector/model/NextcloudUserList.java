@@ -1,4 +1,4 @@
-package eu.planlos.nextcloudjavaconnector.model;
+package eu.planlos.javanextcloudconnector.model;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,6 @@
-package eu.planlos.nextcloudjavaconnector.service;
+package eu.planlos.javanextcloudconnector.service;
 
-import eu.planlos.nextcloudjavaconnector.config.NextcloudApiConfig;
+import eu.planlos.javanextcloudconnector.config.NextcloudApiConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.function.client.WebClient;
 

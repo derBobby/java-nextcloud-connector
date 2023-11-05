@@ -1,4 +1,4 @@
-package eu.planlos.nextcloudjavaconnector.config;
+package eu.planlos.javanextcloudconnector.config;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

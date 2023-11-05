@@ -1,4 +1,4 @@
- package eu.planlos.nextcloudjavaconnector.service;
+ package eu.planlos.javanextcloudconnector.service;
 
  public class AccountCreationException extends RuntimeException {
      public AccountCreationException(String message) {
