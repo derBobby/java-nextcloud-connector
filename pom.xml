@@ -16,6 +16,8 @@
     </parent>
 
     <properties>
+        <github.user>derBobby</github.user>
+        <github.repo>${project.artifactId}</github.repo>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -96,17 +98,17 @@
 
     <distributionManagement>
         <repository>
-            <id>github</id>
+            <id>github-packages-target</id>
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/derBobby/java-nextcloud-connector</url>
+            <url>https://maven.pkg.github.com/${github.user}/${github.repo}</url>
         </repository>
     </distributionManagement>
 
     <repositories>
         <repository>
-            <id>github</id>
+            <id>github-packages-source</id>
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/derBobby/java-utilities</url>
+            <url>https://maven.pkg.github.com/${github.user}/*</url>
         </repository>
     </repositories>
 
