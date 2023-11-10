@@ -24,5 +24,3 @@ jobs:
 
       - name: Test and publish to GitHub Packages
         run: mvn --batch-mode --file pom.xml deploy
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
