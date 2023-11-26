@@ -24,7 +24,7 @@ import static org.springframework.web.reactive.function.client.WebClient.*;
 @ExtendWith(MockitoExtension.class)
 public class NextcloudApiUserServiceTest extends NextcloudTestDataUtility {
 
-    private static final NextcloudApiConfig apiConfig = new NextcloudApiConfig(true, "https://localhost/{userId}", "username", "password", "group");
+    private static final NextcloudApiConfig apiConfig = new NextcloudApiConfig(true, "https://localhost/{userId}", "username", "password", "group", 0, 0);
 
     private static RequestBodyUriSpec requestBodyUriMock;
     @SuppressWarnings("rawtypes")

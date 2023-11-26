@@ -33,8 +33,8 @@ public class NextcloudApiUserService extends NextcloudApiService {
     public static final String NC_API_USERLIST_JSON_URL = NC_API_USERS_URL + NC_API_JSON_SUFFIX;
     public static final String NC_API_USER_JSON_URL = NC_API_USERS_URL + "/%s" + NC_API_JSON_SUFFIX;
 
-    public NextcloudApiUserService(NextcloudApiConfig nextcloudApiConfig, @Qualifier("NextcloudWebClient") WebClient webClient) {
-        super(nextcloudApiConfig, webClient);
+    public NextcloudApiUserService(NextcloudApiConfig config, @Qualifier("NextcloudWebClient") WebClient webClient) {
+        super(config, webClient);
     }
 
     public List<String> getAllUserIdsFromNextcloud() {
@@ -58,7 +58,7 @@ public class NextcloudApiUserService extends NextcloudApiService {
                 .uri(NC_API_USERLIST_JSON_URL)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<NextcloudApiResponse<NextcloudUserList>>() {})
-                .retryWhen(Retry.fixedDelay(0, Duration.ofSeconds(1)))
+                .retryWhen(Retry.fixedDelay(config.retryCount(), Duration.ofSeconds(config.retryInterval())))
                 .doOnError(error -> log.error("{}: {}", FAIL_MESSAGE_GET_USERS, error.getMessage()))
                 .block();
 
@@ -78,7 +78,7 @@ public class NextcloudApiUserService extends NextcloudApiService {
                     .uri(buildUriGetUser(username))
                     .retrieve()
                     .bodyToMono(JsonNode.class)
-                    .retryWhen(Retry.fixedDelay(0, Duration.ofSeconds(1)))
+                    .retryWhen(Retry.fixedDelay(config.retryCount(), Duration.ofSeconds(config.retryInterval())))
                     .doOnError(error -> log.error("{}: {}", FAIL_MESSAGE_GET_USERS, error.getMessage()))
                     .block();
             logJsonResponse(jsonNode);
@@ -89,7 +89,7 @@ public class NextcloudApiUserService extends NextcloudApiService {
                 .uri(buildUriGetUser(username))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<NextcloudApiResponse<NextcloudUser>>() {})
-                .retryWhen(Retry.fixedDelay(0, Duration.ofSeconds(1)))
+                .retryWhen(Retry.fixedDelay(config.retryCount(), Duration.ofSeconds(config.retryInterval())))
                 .doOnError(error -> log.error("{}: {}", FAIL_MESSAGE_GET_USERS, error.getMessage()))
                 .block();
 
@@ -110,7 +110,7 @@ public class NextcloudApiUserService extends NextcloudApiService {
 
     public Map<String, String> getAllUsersAsUseridEmailMap() {
 
-        if (nextcloudApiConfig.inactive()) {
+        if (config.inactive()) {
             return Collections.emptyMap();
         }
 
@@ -123,7 +123,7 @@ public class NextcloudApiUserService extends NextcloudApiService {
 
     public String createUser(String email, String firstName, String lastName) {
 
-        if (nextcloudApiConfig.inactive()) {
+        if (config.inactive()) {
             log.info(SUCCESS_API_INACTIVE);
             return "<none, API inactive>";
         }
@@ -138,7 +138,7 @@ public class NextcloudApiUserService extends NextcloudApiService {
         formData.add("userid", userid);
         formData.add("email", email);
         formData.add("displayName", String.format("%s %s", firstName, lastName));
-        formData.add("groups[]", nextcloudApiConfig.defaultGroup());
+        formData.add("groups[]", config.defaultGroup());
 
         NextcloudApiResponse<NextcloudResponse> apiResponse = webClient
                 .post()
@@ -148,7 +148,7 @@ public class NextcloudApiUserService extends NextcloudApiService {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<NextcloudApiResponse<NextcloudResponse>>() {
                 })
-                .retryWhen(Retry.fixedDelay(0, Duration.ofSeconds(1)))
+                .retryWhen(Retry.fixedDelay(config.retryCount(), Duration.ofSeconds(config.retryInterval())))
                 .doOnError(error -> log.error(FAIL_MESSAGE_CREATE_USER, email, error.getMessage()))
                 .block();
 
