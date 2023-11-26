@@ -182,9 +182,11 @@ public class NextcloudApiUserService extends NextcloudApiService {
         }
 
         String userid = String.format(
-                "kv-kraichgau-%s%s",
+                "%s%s%s%s",
+                config.accountNamePrefix(),
                 firstName.substring(0, charCount).toLowerCase(),
-                lastName.toLowerCase());
+                lastName.toLowerCase(),
+                config.accountNameSuffix());
 
         if (allUsersMap.containsKey(userid)) {
             log.info("Minimal userid is already in use: {}", userid);

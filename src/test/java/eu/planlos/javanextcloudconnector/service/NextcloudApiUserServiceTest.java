@@ -24,7 +24,7 @@ import static org.springframework.web.reactive.function.client.WebClient.*;
 @ExtendWith(MockitoExtension.class)
 public class NextcloudApiUserServiceTest extends NextcloudTestDataUtility {
 
-    private static final NextcloudApiConfig apiConfig = new NextcloudApiConfig(true, "https://localhost/{userId}", "username", "password", "group", 0, 0);
+    private static final NextcloudApiConfig apiConfig = new NextcloudApiConfig(true, "https://localhost/{userId}", "username", "password", "group", 0, 0, "prefix-", "-suffix");
 
     private static RequestBodyUriSpec requestBodyUriMock;
     @SuppressWarnings("rawtypes")
@@ -71,7 +71,7 @@ public class NextcloudApiUserServiceTest extends NextcloudTestDataUtility {
         String userId = nextcloudApiUserService.createUser("newuser@example.com", "New", "User");
 
         // Check
-        Assertions.assertEquals(userId, "kv-kraichgau-nuser");
+        Assertions.assertEquals(userId, String.format("%snuser%s", apiConfig.accountNamePrefix(), apiConfig.accountNameSuffix()));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class NextcloudApiUserServiceTest extends NextcloudTestDataUtility {
         // Prepare
         //      objects
         NextcloudApiUserService nextcloudApiUserService = new NextcloudApiUserService(apiConfig, webClientMock);
-        NextcloudUser takenUser = takenUser();
+        NextcloudUser takenUser = takenUser(apiConfig.accountNamePrefix(), apiConfig.accountNameSuffix());
         NextcloudUserList takenUserList = new NextcloudUserList(List.of(takenUser.id()));
         //      webclient
         NextcloudApiResponse<NextcloudUserList> apiResponseUserList = new NextcloudApiResponse<>(new NextcloudMeta(), takenUserList);
@@ -104,7 +104,7 @@ public class NextcloudApiUserServiceTest extends NextcloudTestDataUtility {
         // Prepare
         //      objects
         NextcloudApiUserService nextcloudApiUserService = new NextcloudApiUserService(apiConfig, webClientMock);
-        NextcloudUser takenUser = takenUser();
+        NextcloudUser takenUser = takenUser(apiConfig.accountNamePrefix(), apiConfig.accountNameSuffix());
         NextcloudUserList takenUserList = new NextcloudUserList(List.of(takenUser.id()));
         //      webclient
         NextcloudApiResponse<NextcloudUserList> apiResponseUserList = new NextcloudApiResponse<>(new NextcloudMeta(), takenUserList);
@@ -132,7 +132,7 @@ public class NextcloudApiUserServiceTest extends NextcloudTestDataUtility {
         String userId = nextcloudApiUserService.createUser("newuser@example.com", "Display", "Name");
 
         // Check
-        Assertions.assertEquals("kv-kraichgau-diname", userId);
+        Assertions.assertEquals(userId, String.format("%sdiname%s", apiConfig.accountNamePrefix(), apiConfig.accountNameSuffix()));
     }
 
     @Test
@@ -140,7 +140,7 @@ public class NextcloudApiUserServiceTest extends NextcloudTestDataUtility {
             // Prepare
             //      objects
             NextcloudApiUserService nextcloudApiUserService = new NextcloudApiUserService(apiConfig, webClientMock);
-            NextcloudUser takenUser = takenUser();
+            NextcloudUser takenUser = takenUser(apiConfig.accountNamePrefix(), apiConfig.accountNameSuffix());
             NextcloudUserList takenUserList = new NextcloudUserList(List.of(takenUser.id()));
             //      webclient
             NextcloudApiResponse<NextcloudUserList> apiResponseUserList = new NextcloudApiResponse<>(new NextcloudMeta(), takenUserList);

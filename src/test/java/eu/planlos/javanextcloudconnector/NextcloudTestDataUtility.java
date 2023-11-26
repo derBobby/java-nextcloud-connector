@@ -7,9 +7,9 @@ import java.util.ArrayList;
 
 public abstract class NextcloudTestDataUtility {
 
-    protected NextcloudUser takenUser() {
+    protected NextcloudUser takenUser(String accountNamePrefix, String accountNameSuffix) {
         return new NextcloudUser(
-                "kv-kraichgau-dname",
+                String.format("%sdname%s", accountNamePrefix, accountNameSuffix),
                 "Display Name",
                 "dname@example.com",
                 new ArrayList<>(),
