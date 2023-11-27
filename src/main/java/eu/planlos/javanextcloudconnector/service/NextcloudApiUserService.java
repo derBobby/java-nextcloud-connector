@@ -7,11 +7,13 @@ import eu.planlos.javautilities.GermanStringsUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
@@ -57,8 +59,12 @@ public class NextcloudApiUserService extends NextcloudApiService {
                 .get()
                 .uri(NC_API_USERLIST_JSON_URL)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<NextcloudApiResponse<NextcloudUserList>>() {})
-                .retryWhen(Retry.fixedDelay(config.retryCount(), Duration.ofSeconds(config.retryInterval())))
+                .bodyToMono(new ParameterizedTypeReference<NextcloudApiResponse<NextcloudUserList>>() {
+                })
+                .retryWhen(Retry
+                        .fixedDelay(config.retryCount(), Duration.ofSeconds(config.retryInterval()))
+                        .filter(this::shouldRetry)
+                )
                 .doOnError(error -> log.error("{}: {}", FAIL_MESSAGE_GET_USERS, error.getMessage()))
                 .block();
 
@@ -68,6 +74,15 @@ public class NextcloudApiUserService extends NextcloudApiService {
 
         NextcloudUserList nextcloudUseridList = apiResponse.getData();
         return nextcloudUseridList.getUsers();
+    }
+
+    //TODO need this in p2nc-integrator
+    private boolean shouldRetry(Throwable throwable) {
+        if (throwable instanceof WebClientResponseException responseException) {
+            HttpStatusCode statusCode = responseException.getStatusCode();
+            return !statusCode.is5xxServerError() && !statusCode.is4xxClientError();
+        }
+        return true;
     }
 
     private NextcloudUser getUser(String username) {

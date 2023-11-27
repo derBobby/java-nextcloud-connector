@@ -13,12 +13,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 import static eu.planlos.javanextcloudconnector.service.NextcloudApiUserService.NC_API_USERLIST_JSON_URL;
 import static eu.planlos.javanextcloudconnector.service.NextcloudApiUserService.NC_API_USER_JSON_URL;
+import static org.mockito.Mockito.mock;
 import static org.springframework.web.reactive.function.client.WebClient.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,12 +39,12 @@ public class NextcloudApiUserServiceTest extends NextcloudTestDataUtility {
 
     @BeforeAll
     static void mockWebClient() {
-        requestBodyUriMock = Mockito.mock(RequestBodyUriSpec.class);
-        requestHeadersMock = Mockito.mock(RequestHeadersSpec.class);
-        requestHeadersUriSpec = Mockito.mock(RequestHeadersUriSpec.class);
-        requestBodyMock = Mockito.mock(RequestBodySpec.class);
-        responseMock = Mockito.mock(ResponseSpec.class);
-        webClientMock = Mockito.mock(WebClient.class);
+        requestBodyUriMock = mock(RequestBodyUriSpec.class);
+        requestHeadersMock = mock(RequestHeadersSpec.class);
+        requestHeadersUriSpec = mock(RequestHeadersUriSpec.class);
+        requestBodyMock = mock(RequestBodySpec.class);
+        responseMock = mock(ResponseSpec.class);
+        webClientMock = mock(WebClient.class);
         Mockito.when(webClientMock.get()).thenReturn(requestHeadersUriSpec);
         Mockito.when(webClientMock.post()).thenReturn(requestBodyUriMock);
     }
@@ -97,6 +99,79 @@ public class NextcloudApiUserServiceTest extends NextcloudTestDataUtility {
         // Act
         // Check
         Assertions.assertThrows(AccountCreationException.class, () -> nextcloudApiUserService.createUser(takenUser.email(), "New", "User"));
+    }
+
+    //TODO is there a test library that starts a webserver ans answers with what I want?
+    // Integration test instead of this crap code...
+
+    @Test
+    public void nextcloudReturns4xx_noRetry() {
+        // Prepare
+        //      objects
+        NextcloudApiUserService nextcloudApiUserService = new NextcloudApiUserService(apiConfig, webClientMock);
+        NextcloudUser takenUser = takenUser(apiConfig.accountNamePrefix(), apiConfig.accountNameSuffix());
+        NextcloudUserList takenUserList = new NextcloudUserList(List.of(takenUser.id()));
+        //      webclient
+        NextcloudApiResponse<NextcloudUserList> apiResponseUserList = new NextcloudApiResponse<>(new NextcloudMeta(), takenUserList);
+        NextcloudApiResponse<NextcloudUser> apiResponseUser = new NextcloudApiResponse<>(new NextcloudMeta(), takenUser);
+        String uriUser = String.format(NC_API_USER_JSON_URL, takenUser.id());
+        //      methods
+        Mockito.when(requestBodyMock.retrieve()).thenReturn(responseMock);
+
+        Mockito.when(requestHeadersUriSpec.uri(ArgumentMatchers.eq(NC_API_USERLIST_JSON_URL))).thenReturn(requestBodyMock);
+        Mockito.when(responseMock.bodyToMono(new ParameterizedTypeReference<NextcloudApiResponse<NextcloudUserList>>(){}))
+                .thenReturn(Mono.just(apiResponseUserList));
+
+        Mockito.when(requestHeadersUriSpec.uri(ArgumentMatchers.eq(uriUser))).thenReturn(requestBodyMock);
+        Mockito.when(responseMock.bodyToMono(new ParameterizedTypeReference<NextcloudApiResponse<NextcloudUser>>(){}))
+                .thenReturn(Mono.just(apiResponseUser));
+
+        // Handle 4xx status code (e.g., 400 Bad Request)
+        Mockito.when(responseMock.bodyToMono(new ParameterizedTypeReference<NextcloudApiResponse<NextcloudUserList>>(){}))
+                .thenReturn(Mono.error(
+                        WebClientResponseException.create(400, "Bad Request",
+                                null, null, null)
+                ));
+
+        // Act
+        // Check
+        //TODO Wrap WebClientResponseException.class in NextcloudApiException.class
+        Assertions.assertThrows(WebClientResponseException.class, () -> nextcloudApiUserService.createUser(takenUser.email(), "New", "User"));
+    }
+
+    @Test
+    public void nextcloudReturns5xx_noRetry() {
+        // Prepare
+        //      objects
+        NextcloudApiUserService nextcloudApiUserService = new NextcloudApiUserService(apiConfig, webClientMock);
+        NextcloudUser takenUser = takenUser(apiConfig.accountNamePrefix(), apiConfig.accountNameSuffix());
+        NextcloudUserList takenUserList = new NextcloudUserList(List.of(takenUser.id()));
+        //      webclient
+        NextcloudApiResponse<NextcloudUserList> apiResponseUserList = new NextcloudApiResponse<>(new NextcloudMeta(), takenUserList);
+        NextcloudApiResponse<NextcloudUser> apiResponseUser = new NextcloudApiResponse<>(new NextcloudMeta(), takenUser);
+        String uriUser = String.format(NC_API_USER_JSON_URL, takenUser.id());
+        //      methods
+        Mockito.when(requestBodyMock.retrieve()).thenReturn(responseMock);
+
+        Mockito.when(requestHeadersUriSpec.uri(ArgumentMatchers.eq(NC_API_USERLIST_JSON_URL))).thenReturn(requestBodyMock);
+        Mockito.when(responseMock.bodyToMono(new ParameterizedTypeReference<NextcloudApiResponse<NextcloudUserList>>(){}))
+                .thenReturn(Mono.just(apiResponseUserList));
+
+        Mockito.when(requestHeadersUriSpec.uri(ArgumentMatchers.eq(uriUser))).thenReturn(requestBodyMock);
+        Mockito.when(responseMock.bodyToMono(new ParameterizedTypeReference<NextcloudApiResponse<NextcloudUser>>(){}))
+                .thenReturn(Mono.just(apiResponseUser));
+
+        // Handle 5xx status code (e.g., 500 Internal Server Error)
+        Mockito.when(responseMock.bodyToMono(new ParameterizedTypeReference<NextcloudApiResponse<NextcloudUserList>>(){}))
+                .thenReturn(Mono.error(
+                        WebClientResponseException.create(500, "Internal Server Error",
+                                null, null, null)
+                ));
+
+        // Act
+        // Check
+        //TODO Wrap WebClientResponseException.class in NextcloudApiException.class
+        Assertions.assertThrows(WebClientResponseException.class, () -> nextcloudApiUserService.createUser(takenUser.email(), "New", "User"));
     }
 
     @Test
