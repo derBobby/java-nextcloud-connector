@@ -2,17 +2,14 @@ name: Merge Dependabot PR
 
 on:
   pull_request:
-    types:
-      - opened
 
 jobs:
-  merge:
-    if: github.event.pull_request.user.login == 'dependabot[bot]'
+  automerge:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
     steps:
-      - name: Merge Dependabot PR
-        uses: juliangruber/merge-pull-request-action@v1
+      - uses: fastify/github-action-merge-dependabot@v3
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          number: 1
-          method: squash # merge rebase
+          skip-verification: true
