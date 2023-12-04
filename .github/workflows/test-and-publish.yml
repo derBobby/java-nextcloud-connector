@@ -16,5 +16,3 @@ jobs:
   codeql:
     needs: mvn-publish
     uses: derBobby/java-pipelines/.github/workflows/callable-codeql.yml@main
-
-#TODO deploy only if java code changed
