@@ -108,7 +108,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/${github.user}</url>
+            <url>https://maven.pkg.github.com/${github.user}/*</url>
         </repository>
     </repositories>
 
