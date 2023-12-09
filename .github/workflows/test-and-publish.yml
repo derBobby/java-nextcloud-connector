@@ -13,10 +13,10 @@ jobs:
     uses: derBobby/java-pipelines/.github/workflows/callable-mvn.yml@main
     with:
       mvn-stage: deploy
+    secrets: inherit
   codeql:
     needs: mvn-publish
     uses: derBobby/java-pipelines/.github/workflows/callable-codeql.yml@main
-    with:
-      token: ${{ secrets.GITHUB_TOKEN }}
+    secrets: inherit
 
 
