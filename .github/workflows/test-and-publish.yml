@@ -14,6 +14,8 @@ jobs:
     with:
       mvn-stage: deploy
       cache: true
+    secrets: inherit
   codeql:
     needs: mvn-publish
     uses: derBobby/java-pipelines/.github/workflows/callable-codeql.yml@main
+    secrets: inherit
