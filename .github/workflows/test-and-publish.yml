@@ -13,7 +13,6 @@ jobs:
     uses: derBobby/java-pipelines/.github/workflows/callable-mvn.yml@main
     with:
       mvn-stage: deploy
-      cache: true
     secrets: inherit
   codeql:
     needs: mvn-publish
