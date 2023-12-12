@@ -5,14 +5,14 @@ import lombok.Getter;
 import java.io.Serial;
 
 @Getter
-public class NextcloudApiException extends RuntimeException {
+public class NextcloudException extends RuntimeException {
 
     @Serial
     private static final long serialVersionUID = 0L;
 
-    public static final String IS_NULL = "NextcloudApiResponse object is NULL";
+    public static final String IS_NULL = "The result from the Pretix API was NULL";
 
-    public NextcloudApiException(String message) {
+    public NextcloudException(String message) {
         super(message);
     }
 }

@@ -69,7 +69,7 @@ public class NextcloudApiUserService extends NextcloudApiService {
                 .block();
 
         if (apiResponse == null) {
-            throw new NextcloudApiException(NextcloudApiException.IS_NULL);
+            throw new NextcloudException(NextcloudException.IS_NULL);
         }
 
         NextcloudUserList nextcloudUseridList = apiResponse.getData();
@@ -109,7 +109,7 @@ public class NextcloudApiUserService extends NextcloudApiService {
                 .block();
 
         if (apiResponse == null) {
-            throw new NextcloudApiException(NextcloudApiException.IS_NULL);
+            throw new NextcloudException(NextcloudException.IS_NULL);
         }
 
         return apiResponse.getData();
@@ -168,10 +168,10 @@ public class NextcloudApiUserService extends NextcloudApiService {
                 .block();
 
         if (apiResponse == null) {
-            throw new NextcloudApiException(NextcloudApiException.IS_NULL);
+            throw new NextcloudException(NextcloudException.IS_NULL);
         }
         if (apiResponse.getMeta().getStatus().equals("failure")) {
-            throw new NextcloudApiException(String.format("Status is 'failure': %s", apiResponse));
+            throw new NextcloudException(String.format("Status is 'failure': %s", apiResponse));
         }
         log.info(SUCCESS_MESSAGE_CREATE_USER, apiResponse.getMeta());
 
