@@ -1,6 +1,5 @@
 package eu.planlos.javanextcloudconnector.service;
 
-import eu.planlos.javanextcloudconnector.NextcloudTestDataUtility;
 import eu.planlos.javanextcloudconnector.config.NextcloudApiConfig;
 import eu.planlos.javanextcloudconnector.model.*;
 import org.junit.jupiter.api.Assertions;
@@ -18,13 +17,15 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+import static eu.planlos.javanextcloudconnector.NextcloudTestDataUtility.okMeta;
+import static eu.planlos.javanextcloudconnector.NextcloudTestDataUtility.takenUser;
 import static eu.planlos.javanextcloudconnector.service.NextcloudApiUserService.NC_API_USERLIST_JSON_URL;
 import static eu.planlos.javanextcloudconnector.service.NextcloudApiUserService.NC_API_USER_JSON_URL;
 import static org.mockito.Mockito.mock;
 import static org.springframework.web.reactive.function.client.WebClient.*;
 
 @ExtendWith(MockitoExtension.class)
-public class NextcloudApiUserServiceTest extends NextcloudTestDataUtility {
+public class NextcloudApiUserServiceTest {
 
     private static final NextcloudApiConfig apiConfig = new NextcloudApiConfig(true, "https://localhost/{userId}", "username", "password", "group", 0, 0, "prefix-", "-suffix");
 
@@ -98,7 +99,7 @@ public class NextcloudApiUserServiceTest extends NextcloudTestDataUtility {
 
         // Act
         // Check
-        Assertions.assertThrows(AccountCreationException.class, () -> nextcloudApiUserService.createUser(takenUser.email(), "New", "User"));
+        Assertions.assertThrows(NextcloudException.class, () -> nextcloudApiUserService.createUser(takenUser.email(), "New", "User"));
     }
 
     //TODO is there a test library that starts a webserver ans answers with what I want?
@@ -244,6 +245,6 @@ public class NextcloudApiUserServiceTest extends NextcloudTestDataUtility {
 
             // Act
             // Check
-            Assertions.assertThrows(AccountCreationException.class, () -> nextcloudApiUserService.createUser("newuser@example.com", "D", "Name"));
+            Assertions.assertThrows(NextcloudException.class, () -> nextcloudApiUserService.createUser("newuser@example.com", "D", "Name"));
         }
 }

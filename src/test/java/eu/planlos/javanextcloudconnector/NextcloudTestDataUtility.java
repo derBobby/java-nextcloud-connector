@@ -5,9 +5,9 @@ import eu.planlos.javanextcloudconnector.model.NextcloudUser;
 
 import java.util.ArrayList;
 
-public abstract class NextcloudTestDataUtility {
+public class NextcloudTestDataUtility {
 
-    protected NextcloudUser takenUser(String accountNamePrefix, String accountNameSuffix) {
+    public static NextcloudUser takenUser(String accountNamePrefix, String accountNameSuffix) {
         return new NextcloudUser(
                 String.format("%sdname%s", accountNamePrefix, accountNameSuffix),
                 "Display Name",
@@ -16,7 +16,7 @@ public abstract class NextcloudTestDataUtility {
                 true);
     }
 
-    protected NextcloudMeta okMeta() {
+    public static NextcloudMeta okMeta() {
         return new NextcloudMeta("200",
                 200,
                 "All fine",
