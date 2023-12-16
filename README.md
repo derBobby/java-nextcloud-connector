@@ -25,6 +25,20 @@ Add Configuration class
 public class NextcloudConfig {}
 ```
 
+## Properties
+
+| Property                            | Type    | Description                                  |
+|-------------------------------------|---------|----------------------------------------------|
+| `nextcloud.api.active`              | Boolean | Enable/Disable usage of API                  |
+| `nextcloud.api.address`             | String  | Nextcloud URL                                |
+| `nextcloud.api.user`                | String  | Nextcloud Username                           | 
+| `nextcloud.api.password`            | String  | Nextcloud password                           | 
+| `nextcloud.api.defaultgroup`        | String  | default group for user creation              | 
+| `nextcloud.api.retry-count`         | String  | Retry count in case of exception             | 
+| `nextcloud.api.retry-interval`      | String  | PInterval for retries in case of exception   | 
+| `nextcloud.api.account-name-prefix` | String  | Prefix to be used for a created account name | 
+| `nextcloud.api.account-name-suffix` | String  | Suffix to be used for a created account name | 
+
 ## Status
 
 [![Merge Dependabot PR](https://github.com/derBobby/java-nextcloud-connector/actions/workflows/dependabot-automerge.yml/badge.svg)](https://github.com/derBobby/java-nextcloud-connector/actions/workflows/dependabot-automerge.yml)
