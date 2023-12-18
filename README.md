@@ -1,15 +1,16 @@
+[![Merge Dependabot PR](https://github.com/derBobby/java-nextcloud-connector/actions/workflows/dependabot-automerge.yml/badge.svg)](https://github.com/derBobby/java-nextcloud-connector/actions/workflows/dependabot-automerge.yml) [![CD](https://github.com/derBobby/java-nextcloud-connector/actions/workflows/test-and-publish.yml/badge.svg)](https://github.com/derBobby/java-nextcloud-connector/actions/workflows/test-and-publish.yml)
+
 # java-nextcloud-connector
 This spring boot library allows to connect to the Nextcloud OCS API v1.
 
-## Features
-### Users endpoint
-* Fetch all userids
-* Fetch userid:email maps
-* Fetch user object
+## Supported API functions
+* Fetch all userids from a Nextcloud installation
+* Fetch all userid:email maps from a Nextcloud installation
 * Create user
 
-## Usage
-Add Maven dependency
+# Usage
+
+## Maven setup
 ```xml
         <dependency>
             <groupId>eu.planlos</groupId>
@@ -18,15 +19,14 @@ Add Maven dependency
         </dependency>
 ```
 
-Add Configuration class
+## Config class setup
 ```java
 @Configuration
 @ComponentScan(basePackages = "eu.planlos.javanextcloudconnector")
 public class NextcloudConfig {}
 ```
 
-## Properties
-
+## Properties setup
 | Property                            | Type    | Description                                  |
 |-------------------------------------|---------|----------------------------------------------|
 | `nextcloud.api.active`              | Boolean | Enable/Disable usage of API                  |
@@ -39,8 +39,26 @@ public class NextcloudConfig {}
 | `nextcloud.api.account-name-prefix` | String  | Prefix to be used for a created account name | 
 | `nextcloud.api.account-name-suffix` | String  | Suffix to be used for a created account name | 
 
-## Status
+## Use in your code
+Autowire the SignalService
+```java
+class YourClass {
+    @Autowired
+    private final NextcloudApiUserService ncUserService;
+}
+```
 
-[![Merge Dependabot PR](https://github.com/derBobby/java-nextcloud-connector/actions/workflows/dependabot-automerge.yml/badge.svg)](https://github.com/derBobby/java-nextcloud-connector/actions/workflows/dependabot-automerge.yml)
-
-[![CD](https://github.com/derBobby/java-nextcloud-connector/actions/workflows/test-and-publish.yml/badge.svg)](https://github.com/derBobby/java-nextcloud-connector/actions/workflows/test-and-publish.yml)
+Call service to use API functions
+```java
+class YourClass {
+    yourMethod() {
+        try {
+            // Your code
+            List<String> list = ncUserService.getAllUserIdsFromNextcloud();
+            Map<String, String> map = ncUserService.getAllUsersAsUseridEmailMap();
+            String username = createUser(email, firstName, lastName);
+            // Your code
+        } catch(NextcloudException e) {
+            // your code
+}   }   }
+```

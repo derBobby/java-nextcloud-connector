@@ -90,6 +90,10 @@ public class NextcloudApiUserService extends NextcloudApiService {
 
     private NextcloudUser getUser(String username) {
 
+        if(isAPIDisabled()) {
+            return null;
+        }
+
         if (log.isDebugEnabled()) {
             JsonNode jsonNode = webClient
                     .get()
@@ -127,21 +131,19 @@ public class NextcloudApiUserService extends NextcloudApiService {
     }
 
     public Map<String, String> getAllUsersAsUseridEmailMap() {
-
-        if (config.inactive()) {
-            return Collections.emptyMap();
-        }
-
         List<String> useridList = getAllUserIdsFromNextcloud();
         return useridList.stream().collect(Collectors.toMap(
                 userid -> userid,
-                userid -> getUser(userid).email()
+                userid -> {
+                    NextcloudUser user = getUser(userid);
+                    return user == null ? "" : user.email();
+                }
         ));
     }
 
     public String createUser(String email, String firstName, String lastName) {
 
-        if (config.inactive()) {
+        if (isAPIDisabled()) {
             log.info(SUCCESS_API_INACTIVE);
             return "<none, API inactive>";
         }
