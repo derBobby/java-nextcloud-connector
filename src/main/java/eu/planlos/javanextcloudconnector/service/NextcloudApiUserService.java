@@ -2,6 +2,7 @@ package eu.planlos.javanextcloudconnector.service;
 
 import eu.planlos.javanextcloudconnector.config.NextcloudApiConfig;
 import eu.planlos.javanextcloudconnector.model.*;
+import eu.planlos.javaspringwebutilities.web.WebClientRetryFilter;
 import eu.planlos.javautilities.GermanStringsUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -55,7 +56,7 @@ public class NextcloudApiUserService extends NextcloudApiService {
                 })
                 .retryWhen(Retry
                         .fixedDelay(config.retryCount(), Duration.ofSeconds(config.retryInterval()))
-                        .filter(this::shouldRetry)
+                        .filter(WebClientRetryFilter::shouldRetry)
                 )
                 .doOnError(error -> log.error("{}: {}", FAIL_MESSAGE_GET_USERS, error.getMessage()))
                 .block();
@@ -66,15 +67,6 @@ public class NextcloudApiUserService extends NextcloudApiService {
 
         NextcloudUserList nextcloudUseridList = apiResponse.getData();
         return nextcloudUseridList.getUsers();
-    }
-
-    //TODO need this in p2nc-integrator
-    private boolean shouldRetry(Throwable throwable) {
-        if (throwable instanceof WebClientResponseException responseException) {
-            HttpStatusCode statusCode = responseException.getStatusCode();
-            return !statusCode.is5xxServerError() && !statusCode.is4xxClientError();
-        }
-        return true;
     }
 
     private NextcloudUser getUser(String username) {
