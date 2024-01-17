@@ -19,9 +19,9 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static eu.planlos.javanextcloudconnector.model.NextcloudException.EMAIL_ADDRESS_IN_USE;
 import static eu.planlos.javanextcloudconnector.model.NextcloudException.USERID_NOT_POSSIBLE;
 
 @Slf4j
@@ -110,15 +110,24 @@ public class NextcloudApiUserService extends NextcloudApiService {
         ));
     }
 
-    public String createUser(String email, String firstName, String lastName) {
+    /**
+     * Checks, if email is already in use, generates username from given parameters. tries to create account in Nextcloud
+     * @param email to use for account
+     * @param firstName to use for login name generation
+     * @param lastName to use for login name generation
+     * @return Optional<String> that is empty, if email is already in use and userId if no exception is thrown.
+     */
+    public Optional<String> createUser(String email, String firstName, String lastName) {
 
         if (isAPIDisabled()) {
             log.info(SUCCESS_API_INACTIVE);
-            return "<none, API inactive>";
+            return Optional.of("<none, API inactive>");
         }
 
         Map<String, String> allUsersMap = getAllUsersAsUseridEmailMap();
-        failIfMailAddressAlreadyInUse(email, allUsersMap);
+        if(isMailAddressAlreadyInUse(email, allUsersMap)) {
+            return Optional.empty();
+        }
 
         // Create user
         String userid = generateUserId(allUsersMap, firstName, lastName);
@@ -149,7 +158,7 @@ public class NextcloudApiUserService extends NextcloudApiService {
         }
         log.info(SUCCESS_MESSAGE_CREATE_USER, apiResponse.getMeta());
 
-        return userid;
+        return Optional.of(userid);
     }
 
     /*
@@ -186,12 +195,8 @@ public class NextcloudApiUserService extends NextcloudApiService {
         return userid;
     }
 
-    private void failIfMailAddressAlreadyInUse(String email, Map<String, String> userMap) {
-        boolean emailAlreadyInUse = userMap.containsValue(email);
-        if (emailAlreadyInUse) {
-            throw new NextcloudException(EMAIL_ADDRESS_IN_USE);
-        }
-        log.info("Email={} is still free, proceeding", email);
+    private boolean isMailAddressAlreadyInUse(String email, Map<String, String> userMap) {
+        return userMap.containsValue(email);
     }
 
     /*

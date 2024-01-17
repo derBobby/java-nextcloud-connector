@@ -16,11 +16,13 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Optional;
 
 import static eu.planlos.javanextcloudconnector.NextcloudTestDataUtility.okMeta;
 import static eu.planlos.javanextcloudconnector.NextcloudTestDataUtility.takenUser;
 import static eu.planlos.javanextcloudconnector.service.NextcloudApiUserService.NC_API_USERLIST_JSON_URL;
 import static eu.planlos.javanextcloudconnector.service.NextcloudApiUserService.NC_API_USER_JSON_URL;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.springframework.web.reactive.function.client.WebClient.*;
 
@@ -71,10 +73,10 @@ public class NextcloudApiUserServiceTest {
         Mockito.when(requestHeadersMock.retrieve()).thenReturn(responseMock);
 
         // Act
-        String userId = nextcloudApiUserService.createUser("newuser@example.com", "New", "User");
+        Optional<String> userId = nextcloudApiUserService.createUser("newuser@example.com", "New", "User");
 
         // Check
-        Assertions.assertEquals(userId, String.format("%snuser%s", apiConfig.accountNamePrefix(), apiConfig.accountNameSuffix()));
+        Assertions.assertEquals(userId.get(), String.format("%snuser%s", apiConfig.accountNamePrefix(), apiConfig.accountNameSuffix()));
     }
 
     @Test
@@ -98,8 +100,10 @@ public class NextcloudApiUserServiceTest {
         Mockito.when(responseMock.bodyToMono(new ParameterizedTypeReference<NextcloudApiResponse<NextcloudUser>>(){})).thenReturn(Mono.just(apiResponseUser));
 
         // Act
+        Optional<String> userId = nextcloudApiUserService.createUser(takenUser.email(), "New", "User");
+
         // Check
-        Assertions.assertThrows(NextcloudException.class, () -> nextcloudApiUserService.createUser(takenUser.email(), "New", "User"));
+        assertFalse(userId.isPresent());
     }
 
     //TODO is there a test library that starts a webserver ans answers with what I want?
@@ -205,10 +209,10 @@ public class NextcloudApiUserServiceTest {
         Mockito.when(requestHeadersMock.retrieve()).thenReturn(responseMock);
 
         // Act
-        String userId = nextcloudApiUserService.createUser("newuser@example.com", "Display", "Name");
+        Optional<String> userId = nextcloudApiUserService.createUser("newuser@example.com", "Display", "Name");
 
         // Check
-        Assertions.assertEquals(userId, String.format("%sdiname%s", apiConfig.accountNamePrefix(), apiConfig.accountNameSuffix()));
+        Assertions.assertEquals(userId.get(), String.format("%sdiname%s", apiConfig.accountNamePrefix(), apiConfig.accountNameSuffix()));
     }
 
     @Test
