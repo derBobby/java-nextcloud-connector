@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import eu.planlos.javanextcloudconnector.model.NextcloudApiResponse;
 import eu.planlos.javanextcloudconnector.model.NextcloudApiResponseDeserializer;
+import eu.planlos.javaspringwebutilities.web.WebClientRequestFilter;
+import eu.planlos.javaspringwebutilities.web.WebClientResponseFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -55,10 +57,9 @@ public class NextcloudWebClientConfig {
                 .baseUrl(address)
                 .exchangeStrategies(exchangeStrategies)
                 .filter(ExchangeFilterFunctions.basicAuthentication(user, password))
-                //TODO inject from outside
-//                .filter(WebClientRequestFilter.logRequest())
-//                .filter(WebClientResponseFilter.logResponse())
-//                .filter(WebClientResponseFilter.handleError())
+                .filter(WebClientRequestFilter.logRequest())
+                .filter(WebClientResponseFilter.logResponse())
+                .filter(WebClientResponseFilter.handleError())
                 .defaultHeaders(httpHeaders -> {
                     httpHeaders.set("OCS-APIRequest", "true");
                     httpHeaders.set("Accept", "application/json");
