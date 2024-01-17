@@ -1,6 +1,5 @@
 package eu.planlos.javanextcloudconnector.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import eu.planlos.javanextcloudconnector.config.NextcloudApiConfig;
 import eu.planlos.javanextcloudconnector.model.*;
 import eu.planlos.javautilities.GermanStringsUtility;
@@ -48,16 +47,6 @@ public class NextcloudApiUserService extends NextcloudApiService {
             return Collections.emptyList();
         }
 
-        if (log.isDebugEnabled()) {
-            JsonNode jsonNode = webClient
-                    .get()
-                    .uri(NC_API_USERLIST_JSON_URL)
-                    .retrieve()
-                    .bodyToMono(JsonNode.class)
-                    .block();
-            logJsonResponse(jsonNode);
-        }
-
         NextcloudApiResponse<NextcloudUserList> apiResponse = webClient
                 .get()
                 .uri(NC_API_USERLIST_JSON_URL)
@@ -94,18 +83,6 @@ public class NextcloudApiUserService extends NextcloudApiService {
             return null;
         }
 
-        if (log.isDebugEnabled()) {
-            JsonNode jsonNode = webClient
-                    .get()
-                    .uri(buildUriGetUser(username))
-                    .retrieve()
-                    .bodyToMono(JsonNode.class)
-                    .retryWhen(Retry.fixedDelay(config.retryCount(), Duration.ofSeconds(config.retryInterval())))
-                    .doOnError(error -> log.error("{}: {}", FAIL_MESSAGE_GET_USERS, error.getMessage()))
-                    .block();
-            logJsonResponse(jsonNode);
-        }
-
         NextcloudApiResponse<NextcloudUser> apiResponse = webClient
                 .get()
                 .uri(buildUriGetUser(username))
@@ -120,14 +97,6 @@ public class NextcloudApiUserService extends NextcloudApiService {
         }
 
         return apiResponse.getData();
-    }
-
-    private static void logJsonResponse(JsonNode jsonNode) {
-        if(jsonNode == null) {
-            log.error("JSON is null");
-        } else {
-            log.debug(jsonNode.toPrettyString());
-        }
     }
 
     public Map<String, String> getAllUsersAsUseridEmailMap() {
