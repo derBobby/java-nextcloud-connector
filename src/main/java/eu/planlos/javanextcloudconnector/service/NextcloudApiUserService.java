@@ -7,13 +7,11 @@ import eu.planlos.javautilities.GermanStringsUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
@@ -187,8 +185,13 @@ public class NextcloudApiUserService extends NextcloudApiService {
         return userid;
     }
 
-    private boolean isMailAddressAlreadyInUse(String email, Map<String, String> userMap) {
-        return userMap.containsValue(email);
+    private boolean isMailAddressAlreadyInUse(String emailToTest, Map<String, String> nextcloudUserEmailList) {
+        for (String nextcloudUserEmail : nextcloudUserEmailList.values()) {
+            if (nextcloudUserEmail.equalsIgnoreCase(emailToTest)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /*
