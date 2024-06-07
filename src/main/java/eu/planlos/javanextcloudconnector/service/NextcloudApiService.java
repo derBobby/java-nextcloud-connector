@@ -20,6 +20,7 @@ public abstract class NextcloudApiService {
             log.info("Nextcloud API is not enabled. Returning empty list or null");
             return true;
         }
+        log.debug("Nextcloud API is enabled");
         return false;
     }
 }

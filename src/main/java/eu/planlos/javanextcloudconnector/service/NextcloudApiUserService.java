@@ -40,35 +40,8 @@ public class NextcloudApiUserService extends NextcloudApiService {
         super(config, webClient);
     }
 
-    public List<String> getAllUserIdsFromNextcloud() {
-
-        if(isAPIDisabled()) {
-            return Collections.emptyList();
-        }
-
-        NextcloudApiResponse<NextcloudUserList> apiResponse = webClient
-                .get()
-                .uri(NC_API_USERLIST_JSON_URL)
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<NextcloudApiResponse<NextcloudUserList>>() {
-                })
-                .retryWhen(Retry
-                        .fixedDelay(config.retryCount(), Duration.ofSeconds(config.retryInterval()))
-                        .filter(WebClientRetryFilter::shouldRetry)
-                )
-                .doOnError(error -> log.error("{}: {}", FAIL_MESSAGE_GET_USERS, error.getMessage()))
-                .block();
-
-        if (apiResponse == null) {
-            throw new NextcloudException(NextcloudException.IS_NULL);
-        }
-
-        NextcloudUserList nextcloudUseridList = apiResponse.getData();
-        return nextcloudUseridList.getUsers();
-    }
-
     private NextcloudUser getUser(String username) {
-
+        log.debug("Getting user from Nextcloud");
         if(isAPIDisabled()) {
             return null;
         }
@@ -89,17 +62,6 @@ public class NextcloudApiUserService extends NextcloudApiService {
         return apiResponse.getData();
     }
 
-    public Map<String, String> getAllUsersAsUseridEmailMap() {
-        List<String> useridList = getAllUserIdsFromNextcloud();
-        return useridList.stream().collect(Collectors.toMap(
-                userid -> userid,
-                userid -> {
-                    NextcloudUser user = getUser(userid);
-                    return user == null ? "" : user.email();
-                }
-        ));
-    }
-
     /**
      * Checks, if email is already in use, generates username from given parameters. tries to create account in Nextcloud
      * @param email to use for account
@@ -109,6 +71,8 @@ public class NextcloudApiUserService extends NextcloudApiService {
      */
     public Optional<String> createUser(String email, String firstName, String lastName) {
 
+        log.debug("Starting Nextcloud user creation");
+
         if (isAPIDisabled()) {
             log.info(SUCCESS_API_INACTIVE);
             return Optional.of("<none, API inactive>");
@@ -116,6 +80,7 @@ public class NextcloudApiUserService extends NextcloudApiService {
 
         Map<String, String> allUsersMap = getAllUsersAsUseridEmailMap();
         if(isMailAddressAlreadyInUse(email, allUsersMap)) {
+            log.info("Mail address already in use");
             return Optional.empty();
         }
 
@@ -151,6 +116,46 @@ public class NextcloudApiUserService extends NextcloudApiService {
         return Optional.of(userid);
     }
 
+    private Map<String, String> getAllUsersAsUseridEmailMap() {
+        log.debug("Creating id/email map for all users");
+
+        List<String> useridList = fetchAllUserIdsFromNextcloud();
+        return useridList.parallelStream().collect(Collectors.toConcurrentMap(
+                userid -> userid,
+                userid -> {
+                    NextcloudUser user = getUser(userid);
+                    return user == null ? "" : user.email();
+                }
+        ));
+    }
+
+    private List<String> fetchAllUserIdsFromNextcloud() {
+        log.debug("Fetching all users from Nextcloud");
+        if(isAPIDisabled()) {
+            return Collections.emptyList();
+        }
+
+        NextcloudApiResponse<NextcloudUserList> apiResponse = webClient
+                .get()
+                .uri(NC_API_USERLIST_JSON_URL)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<NextcloudApiResponse<NextcloudUserList>>() {
+                })
+                .retryWhen(Retry
+                        .fixedDelay(config.retryCount(), Duration.ofSeconds(config.retryInterval()))
+                        .filter(WebClientRetryFilter::shouldRetry)
+                )
+                .doOnError(error -> log.error("{}: {}", FAIL_MESSAGE_GET_USERS, error.getMessage()))
+                .block();
+
+        if (apiResponse == null) {
+            throw new NextcloudException(NextcloudException.IS_NULL);
+        }
+
+        NextcloudUserList nextcloudUseridList = apiResponse.getData();
+        return nextcloudUseridList.getUsers();
+    }
+
     /*
      * Username generators
      */
@@ -161,7 +166,6 @@ public class NextcloudApiUserService extends NextcloudApiService {
     }
 
     private String generateUserId(Map<String, String> allUsersMap, String firstName, String lastName, int charCount) {
-
         // Assert because <= 0 can only happen for coding errors
         assert charCount > 0;
 
