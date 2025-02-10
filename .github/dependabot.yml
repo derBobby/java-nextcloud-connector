@@ -11,6 +11,8 @@ registries:
   maven-github:
     type: maven-repository
     url: https://maven.pkg.github.com/derBobby
+    username: derBobby
+    token: ${{secrets.REPO_PACKAGES_PAT}}
 updates:
   - package-ecosystem: "github-actions" # See documentation for possible values
     directory: "/" # Location of package manifests
@@ -18,8 +20,6 @@ updates:
       interval: "daily"
   - package-ecosystem: "maven"
     directory: "/"
+    registries: "*"
     schedule:
       interval: "daily"
-    registries:
-      - maven-github
-      - maven-central # Default Maven registry
