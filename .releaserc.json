@@ -13,6 +13,7 @@
       {
         "paths": [
           "src/main/java/**",
+          "src/main/resources/**",
           "pom.xml"
         ],
         "releaseRules": [
