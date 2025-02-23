@@ -9,10 +9,8 @@ on:
     branches: [ main ]
 
 jobs:
-  mvn-publish:
-    uses: derBobby/java-pipelines/.github/workflows/callable-mvn.yml@main
-    with:
-      mvn-stage: deploy
+  mvn-deploy:
+    uses: derBobby/java-pipelines/.github/workflows/callable-mvn-deploy.yml@v4.0.3
   codeql:
-    needs: mvn-publish
-    uses: derBobby/java-pipelines/.github/workflows/callable-codeql.yml@main
+    needs: mvn-deploy
+    uses: derBobby/java-pipelines/.github/workflows/callable-codeql.yml@v4.0.3

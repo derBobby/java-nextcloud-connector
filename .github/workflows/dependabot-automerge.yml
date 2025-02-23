@@ -7,9 +7,7 @@ on:
 
 jobs:
   mvn-test:
-    uses: derBobby/java-pipelines/.github/workflows/callable-mvn.yml@v4.0.3
-    with:
-      mvn-stage: test
+    uses: derBobby/java-pipelines/.github/workflows/callable-mvn-test.yml@v4.0.3
   codeql:
     needs: mvn-test
     uses: derBobby/java-pipelines/.github/workflows/callable-codeql.yml@v4.0.3
