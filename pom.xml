@@ -6,7 +6,7 @@
 
     <groupId>eu.planlos</groupId>
     <artifactId>java-nextcloud-connector</artifactId>
-    <version>1.4.0</version>
+    <version>0.0.0</version> <!-- Placeholder for semantic-release -->
 
     <parent>
         <groupId>org.springframework.boot</groupId>

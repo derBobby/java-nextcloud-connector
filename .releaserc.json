@@ -1,0 +1,43 @@
+{
+  "repositoryUrl": "git@github.com:derBobby/java-nextcloud-connector.git",
+  "branches": [
+    "main",
+    {
+      "name": "staging",
+      "prerelease": "rc"
+    }
+  ],
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "paths": [
+          "src/main/java/**",
+          "pom.xml"
+        ],
+        "releaseRules": [
+          { "type": "chore", "scope": "mvn deps", "release": "patch" }
+        ]
+      }
+    ],
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/changelog",
+    [
+      "@semantic-release/exec",
+      {
+        "publishCmd": "mvn versions:set -DnewVersion=${nextRelease.version}"
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": [
+          "pom.xml",
+          "CHANGELOG.md"
+        ],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ],
+    "@semantic-release/github"
+  ]
+}

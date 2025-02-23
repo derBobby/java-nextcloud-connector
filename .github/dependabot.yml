@@ -4,6 +4,7 @@
 # https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
 version: 2
+
 registries:
   maven-central:
     type: maven-repository
@@ -13,13 +14,35 @@ registries:
     url: https://maven.pkg.github.com/derBobby
     username: derBobby
     token: ${{secrets.REPO_PACKAGES_PAT}}
+
 updates:
+
   - package-ecosystem: "github-actions" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+    commit-message:
+      prefix: "chore(actions deps)"  # Ensures changes trigger a release
+      include: "scope"
+
   - package-ecosystem: "maven"
     directory: "/"
-    registries: "*"
     schedule:
       interval: "daily"
+    registries:
+      - maven-github
+      - maven-central # Default Maven registry
+    commit-message:
+      prefix: "chore(mvn deps)"  # Ensures changes trigger a release
+      include: "scope"
+    ignore:
+      - dependency-name: "org.springframework.boot:*"
+        update-types: [ "version-update:semver-major" ]
+
+  - package-ecosystem: "npm"
+    directory: "/"  # Change if package.json is in a subdirectory
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "chore(npm deps)"  # Ensures changes trigger a release
+      include: "scope"
