@@ -10,7 +10,7 @@ on:
 
 jobs:
   mvn-deploy:
-    uses: derBobby/java-pipelines/.github/workflows/callable-mvn-deploy.yml@v4.0.3
+    uses: derBobby/java-pipelines/.github/workflows/callable-mvn-deploy.yml@v4.0.6
   codeql:
     needs: mvn-deploy
-    uses: derBobby/java-pipelines/.github/workflows/callable-codeql.yml@v4.0.3
+    uses: derBobby/java-pipelines/.github/workflows/callable-codeql.yml@v4.0.6
